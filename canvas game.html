@@ -1,0 +1,139 @@
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, user-scalable=0" />
+<body onload=start()>
+<style type="text/css">
+body{margin:0 0;overflow:hidden};
+</style>
+
+<canvas id="canvas" style="background-image: url(images/bg.png)"></canvas>
+
+<script type="text/javascript">
+
+function start()
+{
+	var canvas=document.getElementById("canvas");
+	var ctx=canvas.getContext("2d");
+	canvas.width=window.innerWidth;
+	canvas.height=window.innerHeight;
+	var w=canvas.width;
+	var h=canvas.height;
+	var score=0;
+		var img = new Image();
+	
+	//Define an object Sprite
+	function Sprite(){
+	this.x=w/2;
+	this.y=h/2;
+	this.vx=0;
+	this.vy=0;
+	this.ax=0;
+	this.ay=0;
+	this.width=20;
+	this.height=20;
+	this.color="white";
+	this.greaterThan=function(a,b)
+	{
+		if(a>b)return true; else return false
+	};
+	this.lessThan=function(a,b)
+	{
+		if(a<b)return true; else return false
+	};
+	this.draw=function(x,y,sw,sh)
+		{
+		ctx.fillStyle=this.color;
+		ctx.fillRect(x,y,sw,sh);
+		}
+	}
+
+	//Define an object Sprite
+	function Sprite(){
+	this.x=w/2;
+	this.y=h/2;
+	this.vx=0;
+	this.vy=0;
+	this.ax=0;
+	this.ay=0;
+	this.width=20;
+	this.height=20;
+	this.color="white";
+	this.draw=function(x,y,sw,sh)
+		{
+		ctx.drawImage(img,x,y,80,80);
+		}
+	}
+	//create an object
+	var ob=new Sprite();
+	ob.x=w*1/3;
+	ob.y=h/2;
+	ob.ay=2;
+	ob.img=new Image();   
+	img.src = 'images/bird.png';
+    function randomHeight(){return h*((Math.floor(Math.random()*5))/6)+1;}
+
+	function Block(){
+	this.x=w;
+	this.y=0;
+	this.vx=-10;
+	this.vy=0;
+	this.ax=0;
+	this.ay=0;
+	this.width=40;
+	this.height=randomHeight();
+	this.holeHeight=100;
+	this.color="white";
+	this.draw=function(x,y,bw,bh)
+		{
+		ctx.fillStyle=this.color;
+		ctx.fillRect(x,y,bw,bh);
+		ctx.fillRect(x,bh+this.holeHeight,bw,h-(bh+this.holeHeight));
+		}
+	}
+	var block=[];
+	for(i=0;i<6;i++){
+	block[i]=new Block();
+	block[i].x+=i*(w*2/5);
+	block[i].color="salmon";
+	}
+	function restart(){
+	location.reload(true);
+	}
+	function update (){
+		ctx.clearRect(0,0,w,h);
+		ob.y+=ob.vy;
+		ob.vy+=ob.ay;
+		
+		for(i=0;i<6;i++){
+		block[i].x+=block[i].vx;
+		if(block[i].x<-block[i].width)
+		{
+			block[i].x=10/3*w+2/3*w;
+			block[i].height=randomHeight();
+		}
+		ctx.strokeStyle="white";
+		if(block[i].x<ob.x && block[i].x-block[i].vx>ob.x)score+=1;
+		block[i].draw(block[i].x,0,block[i].width,block[i].height);
+		if(ob.x+ob.width>block[i].x && ob.x+ob.width<block[i].x+block[i].width){
+		if(ob.y+ob.height>block[i].height+block[i].holeHeight || ob.y<block[i].height)
+		{
+		var i=0;
+		while(i<6){block[i].vx=0;ctx.strokeText("Game Over \n Click To Restart",w/3,h/2);i++;
+		canvas.addEventListener('click',restart,false);
+		}
+		}
+		}
+		//collison();
+		}
+		ob.draw(ob.x,ob.y,ob.width,ob.height);
+		ctx.font="30px Arial";
+		ctx.strokeText(score,30,50,100,100);
+	}
+	//Handler
+	function jump(){
+	ob.vy=-15;
+	}
+	setInterval(update,1000/25);
+	canvas.addEventListener("click",jump,false);
+}
+
+</script>
+</body>
